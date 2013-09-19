@@ -34,24 +34,34 @@
 				}
 
 
-			$('.' + sliderName + '-list-item').each(function(i, item) {
-				slider.item.push({
-					body: $(item),
-					width: $(item).width()
+			parseTo('list', slider);
+			parseTo('navigation', navigation);
+
+			function parseTo(itemsFrom, itemsTo) {
+				$('.' + sliderName + '-' + itemsFrom + '-item').each(function(i, item) {
+					itemsTo.item.push({
+						body: $(item),
+						width: $(item).width()
+					});
 				});
-			});
-			$('.' + sliderName + '-navigation-item').each(function(i, item) {
-				navigation.item.push({
-					body: $(item),
-					width: $(item).width()
-				});
-			});
-			var "sl" = 5;
-			console.log(slider);
+			}
+
+			var t = $('.' + sliderName + '-list-item').map(function(item, i, arr) {return $(i);});
+			//console.log($('.' + sliderName + '-list-item'));
+			//console.log(slider);
+			//console.log(navigation);
 		}
 
 		$(function() {
 			slider('slider');
+			var t = {
+				1 : 'a',
+				2 : 'b',
+				3 : 'c'
+			};
+			var tt = ['a', 'b', 'c'];
+			tt['a'] = 5;
+			console.log(tt);
 		});
 	</script>
 </head>
