@@ -23,7 +23,7 @@
 	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
 	<script type="text/javascript">
 		function slider (sliderName) {
-			var slider = {
+			var slide = {
 					body: $('.' + sliderName),
 					list: $('.' + sliderName + '-list'),
 					item: []
@@ -54,14 +54,22 @@
 
 		$(function() {
 			slider('slider');
-			var t = {
-				1 : 'a',
-				2 : 'b',
-				3 : 'c'
-			};
-			var tt = ['a', 'b', 'c'];
-			tt['a'] = 5;
-			console.log(tt);
+
+			var f = function (x) { return x * 2; }
+			var t = function(fun) {
+				return function(y) {
+					return map(y, fun);
+				}
+			}
+
+
+			console.log([1,2,3].map(f));
+
+			console.log(t(f)([1,2,3]));
+
+
+
+
 		});
 	</script>
 </head>

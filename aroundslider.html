@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Around Slider</title>
+	<style>
+		body {margin: 0; font: 130px/300px Tahoma,Arial,sans-serif; text-align: center;}
+		.clearfix {zoom: 1;}
+		.clearfix:after {content: " "; display: block; height: 0; clear: both; visibility: hidden;}
+		.content {width: 910px; margin: 0 auto;}
+		.aroundslider {}
+		.aroundslider-top, .aroundslider-bottom {width: 500px; height: 100px; margin: 0 100px; line-height: 0;}
+		.aroundslider-left, .aroundslider-right {width: 100px; height: 300px; float: left; line-height: 270px;}
+		.aroundslider-window {width: 500px; height: 300px; float: left; position: relative; overflow: hidden; cursor: default;}
+		.aroundslider-window-item {width: 500px; height: 300px; position: absolute; z-index: -1;}
+		.aroundslider-window-item-0 {background-color: #00ff7f;}
+		.aroundslider-window-item-1 {background-color: #1e90ff;}
+		.aroundslider-window-item-2 {background-color: #a52a2a;}
+		.aroundslider-window-item-3 {background-color: #ffd700;}
+		.aroundslider-button {width: 98px; height: 98px; border: 1px solid #000; display: inline-block; text-align: center; font-size: 50px; line-height: 98px; vertical-align: middle; cursor: pointer;}
+		.aroundslider-button:hover, .aroundslider-button-active {width: 90px; height: 90px; border-width: 5px; line-height: 90px;}
+	</style>
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			var widthItem = $('.aroundslider-window-item').width(),
+				heightItem = $('.aroundslider-window-item').height(),
+				speedAnimate = 500;
+
+			var positions = [{top: -heightItem + 'px'}, {left: widthItem + 'px'}, {top: heightItem + 'px'}, {left: -widthItem + 'px'}, {top: 0 + 'px', left: 0 + 'px'}],
+				sideBars = [$('.aroundslider-top'), $('.aroundslider-right'), $('.aroundslider-bottom'), $('.aroundslider-left')];
+
+			//var positions = function(width, height, i) {return [{top: -height + 'px'}, {left: width + 'px'}, {top: height + 'px'}, {left: -width + 'px'}][i];}
+			var listItems = $('.aroundslider-window-item').map(function(i, item) {
+				var temp = {self: $(item), posNum: i % 4};
+				if (i) temp.self.css(positions[temp.posNum]);
+				return temp;
+			});
+			//var currentItem = listItems[0];
+			var listButtons = $('.aroundslider-button').map(function(i, item) {return {self: $(item).appendTo(sideBars[i % 4]).data('num', i), posNum: i % 4};});
+			console.log(listButtons);
+
+			$('.aroundslider-button').click((function() {
+				var currentItem = 0,
+					prevItem = 0;
+				return function() {
+					var $this = $(this);
+					currentItem = $this.data('num');
+					if (currentItem != prevItem) {
+						//listItems[currentItem].self.animate(positions[listItems[currentItem].posNum], speedAnimate);
+						listItems[currentItem].self.animate(positions[4], {duration: speedAnimate, complete: function() {
+							listItems[currentItem].self.css({'z-index': '0'});
+							listItems[prevItem].self.css(positions[listItems[prevItem].posNum]).css({'z-index': '5'});
+							prevItem = currentItem; 
+						}});
+					}
+				}
+			})());
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div class="aroundslider">
+			<div class="aroundslider-top"></div>
+			<div class="aroundslider-left"></div>
+			<div class="aroundslider-window">
+				<div class="aroundslider-window-item aroundslider-window-item-0">1</div>
+				<div class="aroundslider-window-item aroundslider-window-item-1">2</div>
+				<div class="aroundslider-window-item aroundslider-window-item-2">3</div>
+				<div class="aroundslider-window-item aroundslider-window-item-3">4</div>
+			</div>
+			<div class="aroundslider-right clearfix"></div>
+			<div class="clearfix"></div>
+			<div class="aroundslider-bottom"></div>			
+			<div class="aroundslider-button">1</div>
+			<div class="aroundslider-button">2</div>
+			<div class="aroundslider-button">3</div>
+			<div class="aroundslider-button">4</div>
+		</div>
+	</div>
+</body>
+</html>
