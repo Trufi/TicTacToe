@@ -8,7 +8,12 @@
 		.clearfix {zoom: 1;}
 		.clearfix:after {content: " "; display: block; height: 0; clear: both; visibility: hidden;}
 		.content {width: 910px; margin: 0 auto;}
-		.aroundslider {}
+		.aroundslider {
+			-webkit-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
 		.aroundslider-top, .aroundslider-bottom {width: 500px; height: 104px; margin: 0 104px; line-height: 0;}
 		.aroundslider-left-wrap, .aroundslider-right-wrap {width: 104px; height: 300px; float: left; line-height: 270px;}
 		.aroundslider-left, .aroundslider-right {display: inline-block; line-height: 0; vertical-align: middle;}
