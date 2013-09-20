@@ -25,7 +25,8 @@
 		$(function () {
 			var widthItem = $('.aroundslider-window-item').width(),
 				heightItem = $('.aroundslider-window-item').height(),
-				speedAnimate = 500;
+				speedAnimate = 500,
+				sliderWindow = $('.aroundslider-window');
 
 			var positions = [{top: -heightItem + 'px'}, {left: widthItem + 'px'}, {top: heightItem + 'px'}, {left: -widthItem + 'px'}, {top: 0 + 'px', left: 0 + 'px'}],
 				sideBars = [$('.aroundslider-top'), $('.aroundslider-right'), $('.aroundslider-bottom'), $('.aroundslider-left')];
@@ -33,29 +34,32 @@
 			//var positions = function(width, height, i) {return [{top: -height + 'px'}, {left: width + 'px'}, {top: height + 'px'}, {left: -width + 'px'}][i];}
 			var listItems = $('.aroundslider-window-item').map(function(i, item) {
 				var temp = {self: $(item), posNum: i % 4};
-				if (i) temp.self.css(positions[temp.posNum]);
+				//if (i) temp.self.css(positions[temp.posNum]);
+				temp.self.css(positions[temp.posNum]);
 				return temp;
 			});
+
+			var queueItems = [listItems[0].self.data('num', 0)];
+
 			//var currentItem = listItems[0];
 			var listButtons = $('.aroundslider-button').map(function(i, item) {return {self: $(item).appendTo(sideBars[i % 4]).data('num', i), posNum: i % 4};});
 			console.log(listButtons);
 
-			$('.aroundslider-button').click((function() {
-				var currentItem = 0,
-					prevItem = 0;
-				return function() {
-					var $this = $(this);
-					currentItem = $this.data('num');
-					if (currentItem != prevItem) {
-						//listItems[currentItem].self.animate(positions[listItems[currentItem].posNum], speedAnimate);
-						listItems[currentItem].self.animate(positions[4], {duration: speedAnimate, complete: function() {
-							listItems[currentItem].self.css({'z-index': '0'});
-							listItems[prevItem].self.css(positions[listItems[prevItem].posNum]).css({'z-index': '5'});
-							prevItem = currentItem; 
-						}});
-					}
-				}
-			})());
+			function animationComplete() {
+				var $this = $(this);
+				$this.data('num')
+				console.log(queueItems);
+			}
+
+			$('.aroundslider-button').click(function() {
+				var $this = $(this);
+				var i = $this.data('num');
+				
+				var newItem = listItems[i].self.clone().appendTo(sliderWindow).animate(positions[4], {duration: speedAnimate, complete: animationComplete});
+				queueItems.push(newItem.data('num', queueItems.length));
+
+			});
+
 		});
 	</script>
 </head>
