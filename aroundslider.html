@@ -40,7 +40,7 @@
 				sliderWindow = $('.aroundslider-window'),
 				durAnimate = 1500,
 				sideBars = [$('.aroundslider-top'), $('.aroundslider-right'), $('.aroundslider-bottom'), $('.aroundslider-left')],
-				count = (function() {var t = 0; return function() {return t++;}}());
+				count = function() {var t = 0; return function() {return t++;}}();
 
 			function positions(num) {
 				var temp = [[-1, -heightItem - 1], [widthItem + 1, -1], [-1, heightItem + 1], [-widthItem - 1, -1], [-1, -1]];
@@ -65,12 +65,19 @@
 					}
 				});
 			}
+
 			$('.aroundslider-button').mouseover(function() {
-				var i = $(this).data('num'),
-					c = count(),
-					newItem = listItems[i].self.clone().appendTo(sliderWindow).animate(positions(4), {duration: durAnimate, complete: animationComplete});
-				queueItems.push({item: newItem.data('num', c), number: c});
-			});
+				var prevItem = 0;
+				return function() {
+					var i = $(this).data('num');
+					if (prevItem != i) {
+						var	c = count(),
+							newItem = listItems[i].self.clone().appendTo(sliderWindow).animate(positions(4), {duration: durAnimate, complete: animationComplete});
+						queueItems.push({item: newItem.data('num', c), number: c});
+						prevItem = i;
+					}
+				}
+			}());
 
 		});
 	</script>
