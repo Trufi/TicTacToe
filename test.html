@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test</title>
+	<style type="text/css">
+		body {margin: 0;}
+		.content {width: 1000px; margin: 0 auto;}
+
+		.slider {width: 500px; height: 300px; position: relative; overflow: hidden;}
+		.slider-list {width: 10000px; height: 100%; position: absolute; white-space: nowrap;}
+		.slider-list-item {width: 500px; height: 100%; display: inline-block; text-align: center; font: 130px/300px Tahoma,Arial,sans-serif;}
+		.slider-list-item-0 {background-color: #00ff7f;}
+		.slider-list-item-1 {background-color: #ffc0cb;}
+		.slider-list-item-2 {background-color: #00ff7f;}
+		.slider-list-item-3 {background-color: #ffc0cb;}
+		.slider-list-item-4 {background-color: #00ff7f;}
+
+		.slider-navigation {position: absolute; right: 0; bottom: 0;}
+		.slider-navigation-item {margin: 0 1px; padding: 5px 15px; display: inline-block; font: 15px/15px Tahoma,Arial,sans-serif; background-color: #800000; color: #fff; cursor: pointer;}
+		.slider-navigation-item-active {padding: 3px 13px; border: 2px solid #fff;}
+	</style>
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<script type="text/javascript">
+
+		$(function() {
+			for(var i in [1,2,3,4,5]) {
+				console.log(i);
+			}
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div class="slider">
+			<div class="slider-list">
+				<div class="slider-list-item slider-list-item-0">1</div>
+				<div class="slider-list-item slider-list-item-1">2</div>
+				<div class="slider-list-item slider-list-item-2">3</div>
+				<div class="slider-list-item slider-list-item-3">4</div>
+				<div class="slider-list-item slider-list-item-4">5</div>
+			</div>
+			<div class="slider-navigation">
+				<div class="slider-navigation-item">1</div>
+				<div class="slider-navigation-item">2</div>
+				<div class="slider-navigation-item">3</div>
+				<div class="slider-navigation-item">4</div>
+				<div class="slider-navigation-item">5</div>
+			</div>
+		</div>
+	</div>
+</html>
