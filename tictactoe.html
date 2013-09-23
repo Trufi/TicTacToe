@@ -2,12 +2,17 @@
 <html lang="en">
 <head>
 	<meta charset="UTF-8">
-	<title>Test</title>
+	<title>Tic Tac Toe</title>
 	<style type="text/css">
 		body {margin: 0;}
 		.content {width: 500px; margin: 0 auto;}
 		.wrap {width: 500px; height: 500px; line-height: 0; margin-top: 20px;}
-		.field {width: 150px; height: 150px; line-height: 0; border-right: 1px solid #000; border-bottom: 1px solid #000; display: inline-block;}
+		.field {width: 150px; height: 150px; line-height: 0; border-right: 1px solid #000; border-bottom: 1px solid #000; display: inline-block;
+			-webkit-transition: all 0.3s;
+			-moz-transition: all 0.3s;
+			-ms-transition: all 0.3s;
+			-o-transition: all 0.3s;
+			transition: all 0.3s;}
 		.field-cross {background: transparent url('media/field_cross.png') 50% 50% no-repeat;}
 		.field-circle {background: transparent url('media/field_circle.png') 50% 50% no-repeat;}
 		.field-active {background-color: #FFD700;}
@@ -33,10 +38,10 @@
 					}),
 					fillItem: 0
 				}
-			});
-			var winText = $('.desc__text');
-			var whoseTurn = 0;
-			var fieldActive = 10;
+			}),
+				winText = $('.desc__text'),
+				whoseTurn = 0,
+				fieldActive = 10;
 
 			$('.desc__reset').click(function (){
 				winText.html('Go again!');
@@ -54,8 +59,9 @@
 			});
 
 			$('.item').click(function() {
-				var i = $(this).data('numInner');
-				var numOuter = $(this).data('numOuter');
+				var $this = $(this);
+				var i = $this.data('numInner');
+				var numOuter = $this.data('numOuter');
 				var innerField = outerField[numOuter].innerField;
 
 				if (numOuter == fieldActive || fieldActive == 10) {
@@ -74,6 +80,12 @@
 					}
 				}
 			});
+
+			function checkToWin(field, numOuter, num) {
+				var t;
+				
+
+			}
 
 			function winCheck(wT, field, numOuter) {
 				var t = true;
