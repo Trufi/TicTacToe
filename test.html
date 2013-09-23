@@ -22,11 +22,52 @@
 	</style>
 	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
 	<script type="text/javascript">
+		function slider (sliderName) {
+			var slide = {
+					body: $('.' + sliderName),
+					list: $('.' + sliderName + '-list'),
+					item: []
+				},
+				navigation = {
+					body: $('.' + sliderName + '-navigation'),
+					item: []
+				}
+
+
+			parseTo('list', slider);
+			parseTo('navigation', navigation);
+
+			function parseTo(itemsFrom, itemsTo) {
+				$('.' + sliderName + '-' + itemsFrom + '-item').each(function(i, item) {
+					itemsTo.item.push({
+						body: $(item),
+						width: $(item).width()
+					});
+				});
+			}
+
+			var t = $('.' + sliderName + '-list-item').map(function(item, i, arr) {return $(i);});
+			//console.log($('.' + sliderName + '-list-item'));
+			//console.log(slider);
+			//console.log(navigation);
+		}
 
 		$(function() {
-			for(var i in [1,2,3,4,5]) {
-				console.log(i);
+			slider('slider');
+
+			var f = function (x) { return x * 2; }
+			var t = function(fun) {
+				return function(y) {
+					return map(y, fun);
+				}
 			}
+
+
+			console.log([1,2,3].map(f));
+
+			console.log(t(f)([1,2,3]));
+
+
 		});
 	</script>
 </head>
