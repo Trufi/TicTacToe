@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Test</title>
+	<style type="text/css">
+		body {margin: 0;}
+		.content {width: 500px; margin: 0 auto;}
+		.wrap {width: 500px; height: 500px; line-height: 0; margin-top: 20px;}
+		.field {width: 150px; height: 150px; line-height: 0; border-right: 1px solid #000; border-bottom: 1px solid #000; display: inline-block;}
+		.field-cross {background: transparent url('media/field_cross.png') 50% 50% no-repeat;}
+		.field-circle {background: transparent url('media/field_circle.png') 50% 50% no-repeat;}
+		.field-active {background-color: #FFD700;}
+		.item {width: 49px; height: 49px; border-top: 1px solid #000; border-left: 1px solid #000; display: inline-block;}
+		.item-cross {background: transparent url('media/cross.png') 50% 50% no-repeat;}
+		.item-circle {background: transparent url('media/circle.png') 50% 50% no-repeat;}
+		.desc__text {height: 100px; font: 50px/50px Tahoma, Arial,sans-serif; color: #1E90FF;}
+		.desc__reset {height: 50px; border: 3px solid #A52A2A; padding: 0 10px; display: inline-block; font: 50px/50px Tahoma, Arial,sans-serif; color: #A52A2A; cursor: pointer;}
+	</style>
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<script type="text/javascript">
+		$(function() {
+			//fill: 2 - none, 0 - cross, 1 - zero
+			var outerField = $('.field').map(function(i, item) {
+				return {
+					self: $(item).data('num', i), 
+					fill: 2, 
+					innerField: $('.item', item).map(function(j, jtem) {
+						return {
+							self: $(jtem).data('numInner', j).data('numOuter',i), 
+							fill: 2
+						}
+					}),
+					fillItem: 0
+				}
+			});
+			var winText = $('.desc__text');
+			var whoseTurn = 0;
+			var fieldActive = 10;
+
+			$('.desc__reset').click(function (){
+				winText.html('Go again!');
+				fieldActive = 10;
+				whoseTurn = 0;
+				outerField.each(function(i, item) {
+					item.fill = 2;
+					item.fillItem = 0;
+					item.self.removeClass('field-active').removeClass('field-circle').removeClass('field-cross');
+					item.innerField.each(function(j, jtem) {
+						jtem.fill = 2;
+						jtem.self.removeClass('item-cross').removeClass('item-circle');
+					});
+				})
+			});
+
+			$('.item').click(function() {
+				var i = $(this).data('numInner');
+				var numOuter = $(this).data('numOuter');
+				var innerField = outerField[numOuter].innerField;
+
+				if (numOuter == fieldActive || fieldActive == 10) {
+					if (innerField[i].fill == 2) {
+						outerField[numOuter].fillItem++;
+						outerField[numOuter].self.removeClass('field-active');
+						fieldActive = i;
+						if (outerField[i].fillItem < 9) outerField[i].self.addClass('field-active');
+						else fieldActive = 10;
+
+						innerField[i].fill = whoseTurn;
+						if (whoseTurn) innerField[i].self.addClass('item-circle');
+						else innerField[i].self.addClass('item-cross');
+						winCheck(whoseTurn, innerField, numOuter);
+						whoseTurn = (whoseTurn + 1) % 2;
+					}
+				}
+			});
+
+			function winCheck(wT, field, numOuter) {
+				var t = true;
+				for (var j = 0; j < 3; j++) {
+					t = true;
+					for (var i = 0; i < 3; i++) {
+						if (field[i + j * 3].fill != wT) {
+							t = false;
+							break;
+						}
+					}
+					if (t) winFunc(field, numOuter);
+				}
+				for (var j = 0; j < 3; j++) {
+					t = true;
+					for (var i = 0; i < 3; i++) {
+						if (field[j + i * 3].fill != wT) {
+							t = false;
+							break;
+						}
+					}
+					if (t) winFunc(field, numOuter);
+				}
+				t = true;
+				for (var i = 0; i < 3; i++) {
+					if (field[i + i * 3].fill != wT) {
+						t = false;
+						break;
+					}
+				}
+				if (t) winFunc(field, numOuter);
+				t = true;
+				for (var i = 0; i < 3; i++) {
+					if (field[i + (2 - i) * 3].fill != wT) {
+						t = false;
+						break;
+					}
+				}
+				if (t) winFunc(field, numOuter);
+			}
+			function winFunc(field, numOuter) {
+				if (numOuter != 10) {
+					if (outerField[numOuter].fill == 2) {
+						outerField[numOuter].fill = whoseTurn;
+						if (whoseTurn) outerField[numOuter].self.addClass('field-circle');
+						else outerField[numOuter].self.addClass('field-cross');
+						winCheck(whoseTurn, outerField, 10);
+						console.log("win " + whoseTurn + "!");
+					}
+				} else {
+					console.log("Absolute winner " + whoseTurn + "!");
+					if (whoseTurn) winText.html('Crosses wons!');
+					else winText.html('Circles need to be better =/');
+				}
+			}
+
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div class="wrap">
+			<div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div><div class="field"><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div><div class="item"></div></div>
+		</div>
+		<div class="desc">
+			<div class="desc__text"></div>
+			<div class="desc__reset">Reset</div>
+		</div>
+	</div>
+</body>
+</html>
