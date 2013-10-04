@@ -7,7 +7,7 @@
 		body {margin: 0;}
 		.content {width: 1050px; margin: 0 auto;}
 		.image {width: 1001px; height: 651px; background: transparent url('./media/img.jpg') 0 0 no-repeat; line-height: 0;}
-		.item {width: 49px; height: 49px; margin: 1px 0 0 1px; display: inline-block; background: rgba(255,255,255,0.95);}
+		.item {margin: 1px 0 0 1px; display: inline-block; background: rgba(255,255,255,0.95);}
 		.item:hover {background: rgba(255,255,255,0);} 
 		.item.active {background: rgba(255,255,255,0);}
 	</style>
@@ -16,46 +16,68 @@
 	<script type="text/javascript">
 		$(function() {
 			var image = {self: $('.image'), width: $('.image').width(), height: $('.image').height()};
-			var it = {width: 50, height: 50};
+			var it = {width: 25, height: 25};
 			it.lenX = Math.floor(image.width / it.width);
 			it.lenY = Math.floor(image.height / it.width);
+			var radiusOpacity = 4,
+				opacityArray = [],
+				timeInterval = 50,
+				nowTime = Number(new Date()),
+				liveTime = 500;
 
-			items = [];
-			(function initItems() {
-				var t = 0;
+			var items = (function initItems() {
+				var t = 0,
+					res = [];
 				for(j = 0; j < it.lenY; j++) {
 					for (i = 0; i < it.lenX; i++){
-						t = $('<div>', {class: 'item'});
-						t.data('coord', {x: i, y: j});
+						t = $('<div>', {class: 'item'}).data('coord', {x: i, y: j});
+						t.css({width: (it.width - 1) + 'px', height: (it.height - 1) + 'px'});
 						$('.image').append(t);
-						items[i + j * it.lenX] = {self: t, opacity: 1};
+						res[i + j * it.lenX] = {self: t, opacity: 1};
 					}
 				}
+				return res;
 			} ());
 
-			function addOpacity(opac, step) {
-				return opca
+			function bxy (x, y) {
+				if ((x >= 0) && (x < it.lenX) && (y >= 0) && (y < it.lenY)) return true;
+				return false;
 			}
-			function openItems(c) {
-				items[c.x + c.y * it.lenX].self.css({opacity: '0'});
-				items[c.x - 1 + c.y * it.lenX].self.css({opacity: '0.3'}); // left 1
-				items[c.x + 1 + c.y * it.lenX].self.css({opacity: '0.3'}); // right 1
-				items[c.x + (c.y + 1) * it.lenX].self.css({opacity: '0.3'}); // top 1
-				items[c.x + (c.y - 1) * it.lenX].self.css({opacity: '0.3'}); // bottom 1
-
-				items[c.x - 1 + (c.y + 1) * it.lenX].self.css({opacity: '0.8'}); // left top
-				items[c.x + 1 + (c.y + 1) * it.lenX].self.css({opacity: '0.8'}); // right top
-				items[c.x - 1 + (c.y - 1) * it.lenX].self.css({opacity: '0.8'}); // left bottom
-				items[c.x + 1 + (c.y - 1) * it.lenX].self.css({opacity: '0.8'}); // right bottm
-
-				items[c.x - 2 + c.y * it.lenX].self.css({opacity: '0.8'}); // left 2
-				items[c.x + 2 + c.y * it.lenX].self.css({opacity: '0.8'}); // right 2
-				items[c.x + (c.y + 2) * it.lenX].self.css({opacity: '0.8'}); // top 2
-				items[c.x + (c.y - 2) * it.lenX].self.css({opacity: '0.8'}); // bottom 2
-
+			function itemOpacity(item, opa) {
+				item.self.css({opacity: opa});
+				item.opacity = opa;
 			}
-			$('.item').click(function() {
-				openItems($(this).data('coord'));
+			function openItemsNew (c, rad) {
+				for (var i = -rad; i <= rad; i++) {
+					for (var j = -rad; j <= rad; j++) {
+						var norm = Math.abs(i) + Math.abs(j),
+							date = Number(new Date());
+						if ((norm < rad) && bxy(c.x + i, c.y + j)) 
+							{
+								var t =	items[c.x + i + (c.y + j) * it.lenX],
+									opa = norm / rad;
+								if (t.opacity > opa) itemOpacity(t, opa);
+								opacityArray.push({item: t, time: date});
+							}
+					}
+				}
+			}
+
+			function returnVisible () {
+				nowTime += timeInterval;
+				opacityArray = opacityArray.filter(function(item, i) {
+					if (nowTime - item.time > liveTime) {
+						itemOpacity(item.item, 1);
+						return false;
+					}
+					return true;
+				});
+			}
+
+			setInterval(returnVisible, timeInterval);
+			$('.item').hover(function() {
+				//openItems($(this).data('coord'));
+				openItemsNew($(this).data('coord'), radiusOpacity);
 			});
 
 		});
