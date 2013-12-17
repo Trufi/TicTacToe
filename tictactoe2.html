@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Tic Tac Toe</title>
+	<style type="text/css">
+		body {margin: 0;}
+		.content {width: 500px; margin: 0 auto;}
+		.gamewrap {width: 500px; height: 500px; line-height: 0; margin-top: 20px;}
+		
+		/* .deep-2 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 453px; height: 453px;} */
+
+		.deep-1 {display: inline-block; border-right: 1px solid #000; border-bottom: 1px solid #000; width: 150px; height: 150px; line-height: 0;
+			-webkit-transition: all 0.3s;
+			-moz-transition: all 0.3s;
+			-ms-transition: all 0.3s;
+			-o-transition: all 0.3s;
+			transition: all 0.3s;
+		}
+		.deep-1.fill-1 {background: transparent url('media/field_cross.png') 50% 50% no-repeat;}
+		.deep-1.fill-2 {background: transparent url('media/field_circle.png') 50% 50% no-repeat;}
+		.deep-1.active {background-color: #FFD700;}
+
+		.deep-0 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 49px; height: 49px;}
+		.deep-0.fill-1 {background: transparent url('media/cross.png') 50% 50% no-repeat;}
+		.deep-0.fill-2 {background: transparent url('media/circle.png') 50% 50% no-repeat;}
+
+		.desc__text {height: 100px; font: 50px/50px Tahoma, Arial, sans-serif; color: #1E90FF;}
+		.desc__reset {display: inline-block; border: 3px solid #A52A2A; padding: 0 10px; height: 50px; font: 50px/50px Tahoma, Arial,sans-serif; color: #A52A2A; cursor: pointer;}
+	</style>
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<script>
+		var G = {
+			len: 3,
+			deep: 3,
+			turn: 1,
+			players: 2,
+			initAllSq: function() {
+				var mSq = new Sq({deep: this.deep});
+				this.winText = $('#desc__text');
+
+				$('#gamewrap').append(mSq.deepHtml());
+			},
+			clickSq: function(sq) {
+				sq.setFill(this.turn);
+				sq.parent.liteCheckWin(sq.num, sq.fill);
+
+
+				this.turn = this.turn % this.players + 1;
+			}
+		};
+
+		function Sq(parent, num) {
+			// 0 - пусто, 1 - крестики, 2 - нолики
+			this.fill = 0;
+			this.inc = [];
+			this.parent = parent || {};
+			this.deep = parent ? (parent.deep - 1) : 0;
+			this.html = $('<span />', {'class': 'deep-' + this.deep});
+			this.num = num || 0;
+
+			if (this.deep > 0) {
+				this.includeSq();
+			} else {
+				var _this = this;
+				this.html.click(function() { G.clickSq(_this); });
+			}
+		};
+
+		Sq.prototype.setFill = function(fill) {
+			this.html.removeClass('fill-' + this.fill);
+			this.fill = fill || 0;
+			this.html.addClass('fill-' + this.fill);
+		};
+
+		Sq.prototype.includeSq = function() {
+			var p = [],
+				i = 0,
+				len = G.len * G.len;
+
+			for (i; i < len; i++) {
+				p.push(new Sq(this, i));
+			}
+
+			this.inc = p;
+		};
+
+		Sq.prototype.deepHtml = function() {
+			var t = this.html;
+
+			this.inc.forEach(function(el, i) {
+				t.append(el.deepHtml());
+			});
+
+			return t;
+		};
+
+		Sq.prototype.liteCheckWin = function(num, fill) {
+			var x = num % G.len, 
+				y = (num - x) / G.len;
+
+			function check(sq) {
+				var i, t;
+
+				// проверка по горизонтали
+				t = true;
+				for (i = 0; i < G.len; i++) {
+					if (sq.inc[i + y * G.len].fill != fill) {
+						t = false;
+						break;
+					}
+				}
+				if (t) {
+					return true;
+				}
+
+				// проверка по вертикали
+				t = true;
+				for (i = 0; i < G.len; i++) {
+					if (sq.inc[x + i * G.len].fill != fill) {
+						t = false;
+						break;
+					}
+				}
+				if (t) {
+					return true;
+				}
+
+				// раз диагональ
+				t = true;
+				for (i = 0; i < G.len; i++) {
+					if (sq.inc[i + i * G.len].fill != fill) {
+						t = false;
+						break;
+					}
+				}
+				if (t) {
+					return true;
+				}
+
+				// два диагональ
+				t = true;
+				for (i = 0; i < G.len; i++) {
+					if (sq.inc[G.len - i + i * G.len].fill != fill) {
+						t = false;
+						break;
+					}
+				}
+				if (t) {
+					return true;
+				}
+				return false;
+			}
+
+			if (check(this)) {
+				this.setFill(fill);
+				if (this.parent.liteCheckWin) {
+					this.parent.liteCheckWin(this.num, this.fill);
+				} else {
+					if (G.turn == 1) {
+						G.winText.html('Crosses wons!');
+					} else if (G.turn == 2) {
+						G.winText.html('Circles need to be better =/');
+					}
+				}
+			}
+		};
+
+		$(function() {
+			G.initAllSq();
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div class="gamewrap" id="gamewrap"></div>
+		<div class="desc">
+			<div class="desc__text" id="desc__text"></div>
+			<div class="desc__reset">Reset</div>
+		</div>
+	</div>
+</body>
+</html>
