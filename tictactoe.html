@@ -64,22 +64,37 @@
 					numOuter = $this.data('numOuter'),
 					innerField = outerField[numOuter].innerField;
 
-				if (numOuter == fieldActive || fieldActive == 10) {
-					if (innerField[i].fill == 2) {
-						outerField[numOuter].fillItem++;
-						outerField[numOuter].self.removeClass('field-active');
-						fieldActive = i;
-						if (outerField[i].fillItem < 9) outerField[i].self.addClass('field-active');
-						else fieldActive = 10;
+				if ((numO == fieldActive || fieldActive == 10) && (innerField[numI].fill == 2)) {
+					history.unshift({lastClick: {numO: numO, numI: numI}, lastActiveField: fieldActive});
 
-						innerField[i].fill = whoseTurn;
-						if (whoseTurn) innerField[i].self.addClass('item-circle');
-						else innerField[i].self.addClass('item-cross');
-						winCheck(whoseTurn, innerField, numOuter);
-						whoseTurn = (whoseTurn + 1) % 2;
-					}
+					outerField[numO].fillItem++;
+					outerField[numO].self.removeClass('field-active');
+					fieldActive = numI;
+					if (outerField[numI].fillItem < 9) outerField[numI].self.addClass('field-active');
+					else fieldActive = 10;
+
+					innerField[numI].fill = whoseTurn;
+					if (whoseTurn) innerField[numI].self.addClass('item-circle');
+					else innerField[numI].self.addClass('item-cross');
+					winCheck(whoseTurn, innerField, numO);
+					whoseTurn = (whoseTurn + 1) % 2;
 				}
-			});
+			};
+
+			function backToHistory() {
+				var state = history[0];
+				outerField[fieldActive].self.removeClass('field-active');
+				outerField[state.lastClick.numO].fillItem--;
+
+				fieldActive = state.lastActiveField;
+				if(fieldActive < 9) outerField[fieldActive].self.addClass('field-active');
+
+				outerField[state.lastClick.numO].innerField[state.lastClick.numi].fill = 2;
+				outerField[state.lastClick.numO].innerField[state.lastClick.numi].self.removeClass('item-cross').removeClass('item-circle');
+
+				whoseTurn = (whoseTurn + 1) % 2;
+
+			}
 
 			function winCheck(wT, field, numOuter) {
 				var t = true,

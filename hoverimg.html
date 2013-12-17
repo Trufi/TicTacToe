@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Hover Image</title>
+	<style type="text/css">
+		body {margin: 0;}
+		.content {width: 1050px; margin: 0 auto;}
+		.image {width: 1001px; height: 651px; background: transparent url('./media/img.jpg') 0 0 no-repeat; line-height: 0;}
+		.item {margin: 1px 0 0 1px; display: inline-block; background: rgba(255,255,255,0.95);}
+		.item:hover {background: rgba(255,255,255,0);} 
+		.item.active {background: rgba(255,255,255,0);}
+	</style>
+	<script type="text/javascript" src="jquery-1.10.2.min.js"></script>
+	<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"  type="text/javascript"></script> -->
+	<script type="text/javascript">
+		$(function() {
+			var image = {self: $('.image'), width: $('.image').width(), height: $('.image').height()};
+			var it = {width: 25, height: 25};
+			it.lenX = Math.floor(image.width / it.width);
+			it.lenY = Math.floor(image.height / it.width);
+			var radiusOpacity = 4,
+				opacityArray = [],
+				timeInterval = 50,
+				nowTime = Number(new Date()),
+				liveTime = 500;
+
+			var items = (function initItems() {
+				var t = 0,
+					res = [];
+				for(j = 0; j < it.lenY; j++) {
+					for (i = 0; i < it.lenX; i++){
+						t = $('<div>', {class: 'item'}).data('coord', {x: i, y: j});
+						t.css({width: (it.width - 1) + 'px', height: (it.height - 1) + 'px'});
+						$('.image').append(t);
+						res[i + j * it.lenX] = {self: t, opacity: 1};
+					}
+				}
+				return res;
+			} ());
+
+			function bxy (x, y) {
+				if ((x >= 0) && (x < it.lenX) && (y >= 0) && (y < it.lenY)) return true;
+				return false;
+			}
+			function itemOpacity(item, opa) {
+				item.self.css({opacity: opa});
+				item.opacity = opa;
+			}
+			function openItemsNew (c, rad) {
+				for (var i = -rad; i <= rad; i++) {
+					for (var j = -rad; j <= rad; j++) {
+						var norm = Math.abs(i) + Math.abs(j),
+							date = Number(new Date());
+						if ((norm < rad) && bxy(c.x + i, c.y + j)) 
+							{
+								var t =	items[c.x + i + (c.y + j) * it.lenX],
+									opa = norm / rad;
+								if (t.opacity > opa) itemOpacity(t, opa);
+								opacityArray.push({item: t, time: date});
+							}
+					}
+				}
+			}
+
+			function returnVisible () {
+				nowTime += timeInterval;
+				opacityArray = opacityArray.filter(function(item, i) {
+					if (nowTime - item.time > liveTime) {
+						itemOpacity(item.item, 1);
+						return false;
+					}
+					return true;
+				});
+			}
+
+			setInterval(returnVisible, timeInterval);
+			$('.item').hover(function() {
+				//openItems($(this).data('coord'));
+				openItemsNew($(this).data('coord'), radiusOpacity);
+			});
+
+		});
+	</script>
+</head>
+<body>
+	<div class="content">
+		<div class="image"></div>
+	</div>
+</body>
+</html>
