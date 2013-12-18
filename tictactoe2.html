@@ -47,6 +47,7 @@
 			init: function() {
 				this.resetButton = $('#desc__reset');
 				this.gamewrap = $('#gamewrap');
+				this.winText = $('#desc__text');
 
 				this.resetButton.click(function() { G.reset(); });
 				this.initAllSq();
@@ -64,14 +65,16 @@
 				}
 			},
 			win: function() {
-				var winTextElem = $('#desc__text'),
-					text = ['Crosses... =)', 'Circles... =/'];
+				var text = ['Crosses... =)', 'Circles... =/'];
 
-				winTextElem.html(text[this.turn - 1]);
+				this.winText.html(text[this.turn - 1]);
 				this.isEnd = true;
 			},
 			reset: function() {
 				this.gamewrap.empty();
+				this.turn = 1;
+				this.isEnd = false;
+				this.winText.empty();
 				this.initAllSq();
 			},
 
