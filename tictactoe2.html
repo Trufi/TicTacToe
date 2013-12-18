@@ -30,27 +30,54 @@
 	</style>
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
+		// parent переделать в parent() с проверкой
+
 		var G = {
+			// длина выигрышной комбинации
 			len: 3,
+			// количество надклеток
 			deep: 3,
+			// ход 1-го игрока
 			turn: 1,
+			// кол-во игроков
 			players: 2,
+			// игра окончена?
+			isEnd: false,
+			init: function() {
+				this.resetButton = $('#desc__reset');
+				this.gamewrap = $('#gamewrap');
+
+				this.resetButton.click(function() { G.reset(); });
+				this.initAllSq();
+			},
 			initAllSq: function() {
 				var mSq = new Sq({deep: this.deep});
-				this.winText = $('#desc__text');
 
-				$('#gamewrap').append(mSq.deepHtml());
+				this.gamewrap.append(mSq.deepHtml());
 			},
 			clickSq: function(sq) {
-				sq.setFill(this.turn);
-				sq.parent.liteCheckWin(sq.num, sq.fill);
+				if (!sq.fill && !this.isEnd) {
+					sq.press();
 
+					this.turn = this.turn % this.players + 1;
+				}
+			},
+			win: function() {
+				var winTextElem = $('#desc__text'),
+					text = ['Crosses wons!', 'Circles need to be better =/'];
 
-				this.turn = this.turn % this.players + 1;
+				winTextElem.html(text[this.turn]);
+				this.isEnd = true;
+			},
+			reset: function() {
+				this.gamewrap.empty();
+				this.initAllSq();
 			}
 		};
 
 		function Sq(parent, num) {
+			var _this = this;
+
 			// 0 - пусто, 1 - крестики, 2 - нолики
 			this.fill = 0;
 			this.inc = [];
@@ -58,11 +85,11 @@
 			this.deep = parent ? (parent.deep - 1) : 0;
 			this.html = $('<span />', {'class': 'deep-' + this.deep});
 			this.num = num || 0;
+			this.active = true;
 
 			if (this.deep > 0) {
 				this.includeSq();
 			} else {
-				var _this = this;
 				this.html.click(function() { G.clickSq(_this); });
 			}
 		};
@@ -71,8 +98,54 @@
 			this.html.removeClass('fill-' + this.fill);
 			this.fill = fill || 0;
 			this.html.addClass('fill-' + this.fill);
+
+			return this;
 		};
 
+		Sq.prototype.press = function() {
+			if (this.checkParentsActive()) {
+				this.setFill(G.turn);
+				if (this.parent.liteCheckWin) {
+					this.parent.liteCheckWin(this.num, this.fill);
+					if (this.parent.parent.liteCheckWin) {
+						this.parent
+							.setActive(false)
+							.parent.inc[this.num].setActive(true);
+					}
+				} else {
+					G.win();
+				}
+			}
+
+			return this;
+		};
+
+		Sq.prototype.setActive = function(bool) {
+			this.active = bool;
+			if (bool) {
+				this.html.addClass('active');
+			} else {
+				this.html.removeClass('active');
+			}
+
+			return this;
+		};
+
+		// проверка родителей на active
+		Sq.prototype.checkParentsActive = function() {
+			if (this.parent.liteCheckWin) {
+				if (this.parent.active) {
+					return this.parent.checkParentsActive();
+				} else {
+					return false;
+				}
+			} else {
+				// верхний элемент всегда активен
+				return true;
+			}
+		};
+
+		// вставить внутренние клетки
 		Sq.prototype.includeSq = function() {
 			var p = [],
 				i = 0,
@@ -83,8 +156,11 @@
 			}
 
 			this.inc = p;
+
+			return this;
 		};
 
+		// получить весь html с внутренними клетками
 		Sq.prototype.deepHtml = function() {
 			var t = this.html;
 
@@ -102,6 +178,9 @@
 			function check(sq) {
 				var i, t;
 
+				if (sq.fill != 0) {
+					return false;
+				}
 				// проверка по горизонтали
 				t = true;
 				for (i = 0; i < G.len; i++) {
@@ -153,21 +232,14 @@
 			}
 
 			if (check(this)) {
-				this.setFill(fill);
-				if (this.parent.liteCheckWin) {
-					this.parent.liteCheckWin(this.num, this.fill);
-				} else {
-					if (G.turn == 1) {
-						G.winText.html('Crosses wons!');
-					} else if (G.turn == 2) {
-						G.winText.html('Circles need to be better =/');
-					}
-				}
+				this.press();
 			}
+
+			return this;
 		};
 
 		$(function() {
-			G.initAllSq();
+			G.init();
 		});
 	</script>
 </head>
@@ -176,7 +248,7 @@
 		<div class="gamewrap" id="gamewrap"></div>
 		<div class="desc">
 			<div class="desc__text" id="desc__text"></div>
-			<div class="desc__reset">Reset</div>
+			<div class="desc__reset" id="desc__reset">Reset</div>
 		</div>
 	</div>
 </body>
