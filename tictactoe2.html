@@ -31,6 +31,7 @@
 	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
 	<script>
 		// parent переделать в parent() с проверкой
+		// history api
 
 		var G = {
 			// длина выигрышной комбинации
@@ -64,14 +65,36 @@
 			},
 			win: function() {
 				var winTextElem = $('#desc__text'),
-					text = ['Crosses wons!', 'Circles need to be better =/'];
+					text = ['Crosses... =)', 'Circles... =/'];
 
-				winTextElem.html(text[this.turn]);
+				winTextElem.html(text[this.turn - 1]);
 				this.isEnd = true;
 			},
 			reset: function() {
 				this.gamewrap.empty();
 				this.initAllSq();
+			},
+
+			history: {
+				init: function() {
+					G.title = 'Tic Tac Toe';
+					// блокируем statechange после pushState
+					this.loadBlock = false;
+
+					window.history.replaceState({}, G.title);
+					window.history.Adapter.bind(window, 'statechange', function() { G.history.load(); });
+				},
+				push: function() {
+					this.loadBlock = true;
+					window.history.pushState({}, G.title);
+				},
+				load: function() {
+					if (!this.loadBlock) {
+
+					} else {
+						this.loadBlock = false;
+					}
+				}
 			}
 		};
 
@@ -105,6 +128,7 @@
 		Sq.prototype.press = function() {
 			if (this.checkParentsActive()) {
 				this.setFill(G.turn);
+				// G.history.push();
 				if (this.parent.liteCheckWin) {
 					this.parent.liteCheckWin(this.num, this.fill);
 					if (this.parent.parent.liteCheckWin) {
