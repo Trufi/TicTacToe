@@ -1,293 +1,293 @@
 <!doctype html>
 <html>
 <head>
-	<meta charset="UTF-8">
-	<title>Tic Tac Toe 2</title>
-	<style type="text/css">
-		body {margin: 0;}
-		.content {width: 500px; margin: 0 auto;}
-		.gamewrap {width: 500px; height: 500px; line-height: 0; margin-top: 20px;}
-		
-		/* .deep-2 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 453px; height: 453px;} */
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe 2</title>
+    <style>
+        body {margin: 0;}
+        .content {width: 500px; margin: 0 auto;}
+        .gamewrap {width: 500px; height: 500px; line-height: 0; margin-top: 20px;}
+        
+        /* .deep-2 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 453px; height: 453px;} */
 
-		.deep-1 {display: inline-block; border-right: 1px solid #000; border-bottom: 1px solid #000; width: 150px; height: 150px; line-height: 0;
-			-webkit-transition: all 0.3s;
-			-moz-transition: all 0.3s;
-			-ms-transition: all 0.3s;
-			-o-transition: all 0.3s;
-			transition: all 0.3s;
-		}
-		.deep-1.fill-1 {background: transparent url('media/field_cross.png') 50% 50% no-repeat;}
-		.deep-1.fill-2 {background: transparent url('media/field_circle.png') 50% 50% no-repeat;}
-		.deep-1.active {background-color: #FFD700;}
+        .deep-1 {display: inline-block; border-right: 1px solid #000; border-bottom: 1px solid #000; width: 150px; height: 150px; line-height: 0;
+            -webkit-transition: all 0.3s;
+            -moz-transition: all 0.3s;
+            -ms-transition: all 0.3s;
+            -o-transition: all 0.3s;
+            transition: all 0.3s;
+        }
+        .deep-1.fill-1 {background: transparent url('media/field_cross.png') 50% 50% no-repeat;}
+        .deep-1.fill-2 {background: transparent url('media/field_circle.png') 50% 50% no-repeat;}
+        .deep-1.active {background-color: #FFD700;}
 
-		.deep-0 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 49px; height: 49px;}
-		.deep-0.fill-1 {background: transparent url('media/cross.png') 50% 50% no-repeat;}
-		.deep-0.fill-2 {background: transparent url('media/circle.png') 50% 50% no-repeat;}
+        .deep-0 {display: inline-block; border-top: 1px solid #000; border-left: 1px solid #000; width: 49px; height: 49px;}
+        .deep-0.fill-1 {background: transparent url('media/cross.png') 50% 50% no-repeat;}
+        .deep-0.fill-2 {background: transparent url('media/circle.png') 50% 50% no-repeat;}
 
-		.desc__text {height: 100px; font: 50px/50px Tahoma, Arial, sans-serif; color: #1E90FF;}
-		.desc__reset {display: inline-block; border: 3px solid #A52A2A; padding: 0 10px; height: 50px; font: 50px/50px Tahoma, Arial,sans-serif; color: #A52A2A; cursor: pointer;}
-	</style>
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
-	<script>
-		// parent переделать в parent() с проверкой
-		// history api
+        .desc__text {height: 100px; font: 50px/50px Tahoma, Arial, sans-serif; color: #1E90FF;}
+        .desc__reset {display: inline-block; border: 3px solid #A52A2A; padding: 0 10px; height: 50px; font: 50px/50px Tahoma, Arial,sans-serif; color: #A52A2A; cursor: pointer;}
+    </style>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+    <script>
+        // parent переделать в parent() с проверкой
+        // history api
 
-		var G = {
-			// длина выигрышной комбинации
-			len: 3,
-			// количество надклеток
-			deep: 3,
-			// ход 1-го игрока
-			turn: 1,
-			// кол-во игроков
-			players: 2,
-			// игра окончена?
-			isEnd: false,
-			init: function() {
-				this.resetButton = $('#desc__reset');
-				this.gamewrap = $('#gamewrap');
-				this.winText = $('#desc__text');
+        var G = {
+            // длина выигрышной комбинации
+            len: 3,
+            // количество надклеток
+            deep: 3,
+            // ход 1-го игрока
+            turn: 1,
+            // кол-во игроков
+            players: 2,
+            // игра окончена?
+            isEnd: false,
+            init: function() {
+                this.resetButton = $('#desc__reset');
+                this.gamewrap = $('#gamewrap');
+                this.winText = $('#desc__text');
 
-				this.resetButton.click(function() { G.reset(); });
-				this.initAllSq();
-			},
-			initAllSq: function() {
-				var mSq = new Sq({deep: this.deep});
+                this.resetButton.click(function() { G.reset(); });
+                this.initAllSq();
+            },
+            initAllSq: function() {
+                var mSq = new Sq({deep: this.deep});
 
-				this.gamewrap.append(mSq.deepHtml());
-			},
-			clickSq: function(sq) {
-				if (!sq.fill && !this.isEnd) {
-					sq.press();
+                this.gamewrap.append(mSq.deepHtml());
+            },
+            clickSq: function(sq) {
+                if (!sq.fill && !this.isEnd) {
+                    sq.press();
 
-					this.turn = this.turn % this.players + 1;
-				}
-			},
-			win: function() {
-				var text = ['Crosses... =)', 'Circles... =/'];
+                    this.turn = this.turn % this.players + 1;
+                }
+            },
+            win: function() {
+                var text = ['Crosses... =)', 'Circles... =/'];
 
-				this.winText.html(text[this.turn - 1]);
-				this.isEnd = true;
-			},
-			reset: function() {
-				this.gamewrap.empty();
-				this.turn = 1;
-				this.isEnd = false;
-				this.winText.empty();
-				this.initAllSq();
-			},
+                this.winText.html(text[this.turn - 1]);
+                this.isEnd = true;
+            },
+            reset: function() {
+                this.gamewrap.empty();
+                this.turn = 1;
+                this.isEnd = false;
+                this.winText.empty();
+                this.initAllSq();
+            },
 
-			history: {
-				init: function() {
-					G.title = 'Tic Tac Toe';
-					// блокируем statechange после pushState
-					this.loadBlock = false;
+            history: {
+                init: function() {
+                    G.title = 'Tic Tac Toe';
+                    // блокируем statechange после pushState
+                    this.loadBlock = false;
 
-					window.history.replaceState({}, G.title);
-					window.history.Adapter.bind(window, 'statechange', function() { G.history.load(); });
-				},
-				push: function() {
-					this.loadBlock = true;
-					window.history.pushState({}, G.title);
-				},
-				load: function() {
-					if (!this.loadBlock) {
+                    window.history.replaceState({}, G.title);
+                    window.history.Adapter.bind(window, 'statechange', function() { G.history.load(); });
+                },
+                push: function() {
+                    this.loadBlock = true;
+                    window.history.pushState({}, G.title);
+                },
+                load: function() {
+                    if (!this.loadBlock) {
 
-					} else {
-						this.loadBlock = false;
-					}
-				}
-			}
-		};
+                    } else {
+                        this.loadBlock = false;
+                    }
+                }
+            }
+        };
 
-		function Sq(parent, num) {
-			var _this = this;
+        function Sq(parent, num) {
+            var _this = this;
 
-			// 0 - пусто, 1 - крестики, 2 - нолики
-			this.fill = 0;
-			this.inc = [];
-			this.parent = parent || {};
-			this.deep = parent ? (parent.deep - 1) : 0;
-			this.html = $('<span />', {'class': 'deep-' + this.deep});
-			this.num = num || 0;
+            // 0 - пусто, 1 - крестики, 2 - нолики
+            this.fill = 0;
+            this.inc = [];
+            this.parent = parent || {};
+            this.deep = parent ? (parent.deep - 1) : 0;
+            this.html = $('<span />', {'class': 'deep-' + this.deep});
+            this.num = num || 0;
 
-			// 3-и состояния: активна, неактивна, начальное = null
-			this.active = null;
+            // 3-и состояния: активна, неактивна, начальное = null
+            this.active = null;
 
-			if (this.deep > 0) {
-				this.includeSq();
-			} else {
-				this.html.click(function() { G.clickSq(_this); });
-			}
-		};
+            if (this.deep > 0) {
+                this.includeSq();
+            } else {
+                this.html.click(function() { G.clickSq(_this); });
+            }
+        };
 
-		Sq.prototype.setFill = function(fill) {
-			this.html.removeClass('fill-' + this.fill);
-			this.fill = fill || 0;
-			this.html.addClass('fill-' + this.fill);
+        Sq.prototype.setFill = function(fill) {
+            this.html.removeClass('fill-' + this.fill);
+            this.fill = fill || 0;
+            this.html.addClass('fill-' + this.fill);
 
-			return this;
-		};
+            return this;
+        };
 
-		Sq.prototype.press = function() {
-			if (this.checkParentsActive()) {
-				this.setFill(G.turn);
-				// G.history.push();
-				if (this.parent.liteCheckWin) {
-					this.parent.liteCheckWin(this.num, this.fill);
-					if (this.parent.parent.liteCheckWin) {
-						this.parent
-							.setActive(false)
-							.parent.inc[this.num].setActive(true);
-					}
-				} else {
-					G.win();
-				}
-			}
+        Sq.prototype.press = function() {
+            if (this.checkParentsActive()) {
+                this.setFill(G.turn);
+                // G.history.push();
+                if (this.parent.liteCheckWin) {
+                    this.parent.liteCheckWin(this.num, this.fill);
+                    if (this.parent.parent.liteCheckWin) {
+                        this.parent
+                            .setActive(false)
+                            .parent.inc[this.num].setActive(true);
+                    }
+                } else {
+                    G.win();
+                }
+            }
 
-			return this;
-		};
+            return this;
+        };
 
-		Sq.prototype.setActive = function(bool) {
-			this.active = bool;
-			if (bool) {
-				this.html.addClass('active');
-			} else {
-				this.html.removeClass('active');
-			}
+        Sq.prototype.setActive = function(bool) {
+            this.active = bool;
+            if (bool) {
+                this.html.addClass('active');
+            } else {
+                this.html.removeClass('active');
+            }
 
-			return this;
-		};
+            return this;
+        };
 
-		Sq.prototype.setParentsActive = function(bool) {
-			if (this.parent.liteCheckWin) {
-				this.parent.active = bool;
-				this.parent.setParentsActive(bool);
-			}
+        Sq.prototype.setParentsActive = function(bool) {
+            if (this.parent.liteCheckWin) {
+                this.parent.active = bool;
+                this.parent.setParentsActive(bool);
+            }
 
-			return this;
-		};
+            return this;
+        };
 
-		// проверка родителей на active
-		Sq.prototype.checkParentsActive = function(firstState) {
-			if (this.parent.liteCheckWin) {
-				if (this.parent.active || this.parent.active === null) {
-					return this.parent.checkParentsActive();
-				} else {
-					return false;
-				}
-			} else {
-				// верхний элемент всегда активен
-				return true;
-			}
-		};
+        // проверка родителей на active
+        Sq.prototype.checkParentsActive = function(firstState) {
+            if (this.parent.liteCheckWin) {
+                if (this.parent.active || this.parent.active === null) {
+                    return this.parent.checkParentsActive();
+                } else {
+                    return false;
+                }
+            } else {
+                // верхний элемент всегда активен
+                return true;
+            }
+        };
 
-		// вставить внутренние клетки
-		Sq.prototype.includeSq = function() {
-			var p = [],
-				i = 0,
-				len = G.len * G.len;
+        // вставить внутренние клетки
+        Sq.prototype.includeSq = function() {
+            var p = [],
+                i = 0,
+                len = G.len * G.len;
 
-			for (i; i < len; i++) {
-				p.push(new Sq(this, i));
-			}
+            for (i; i < len; i++) {
+                p.push(new Sq(this, i));
+            }
 
-			this.inc = p;
+            this.inc = p;
 
-			return this;
-		};
+            return this;
+        };
 
-		// получить весь html с внутренними клетками
-		Sq.prototype.deepHtml = function() {
-			var t = this.html;
+        // получить весь html с внутренними клетками
+        Sq.prototype.deepHtml = function() {
+            var t = this.html;
 
-			this.inc.forEach(function(el, i) {
-				t.append(el.deepHtml());
-			});
+            this.inc.forEach(function(el, i) {
+                t.append(el.deepHtml());
+            });
 
-			return t;
-		};
+            return t;
+        };
 
-		Sq.prototype.liteCheckWin = function(num, fill) {
-			var x = num % G.len, 
-				y = (num - x) / G.len;
+        Sq.prototype.liteCheckWin = function(num, fill) {
+            var x = num % G.len, 
+                y = (num - x) / G.len;
 
-			function check(sq) {
-				var i, t;
+            function check(sq) {
+                var i, t;
 
-				if (sq.fill !== 0) {
-					return false;
-				}
-				// проверка по горизонтали
-				t = true;
-				for (i = 0; i < G.len; i++) {
-					if (sq.inc[i + y * G.len].fill != fill) {
-						t = false;
-						break;
-					}
-				}
-				if (t) {
-					return true;
-				}
+                if (sq.fill !== 0) {
+                    return false;
+                }
+                // проверка по горизонтали
+                t = true;
+                for (i = 0; i < G.len; i++) {
+                    if (sq.inc[i + y * G.len].fill != fill) {
+                        t = false;
+                        break;
+                    }
+                }
+                if (t) {
+                    return true;
+                }
 
-				// проверка по вертикали
-				t = true;
-				for (i = 0; i < G.len; i++) {
-					if (sq.inc[x + i * G.len].fill != fill) {
-						t = false;
-						break;
-					}
-				}
-				if (t) {
-					return true;
-				}
+                // проверка по вертикали
+                t = true;
+                for (i = 0; i < G.len; i++) {
+                    if (sq.inc[x + i * G.len].fill != fill) {
+                        t = false;
+                        break;
+                    }
+                }
+                if (t) {
+                    return true;
+                }
 
-				// раз диагональ
-				t = true;
-				for (i = 0; i < G.len; i++) {
-					if (sq.inc[i + i * G.len].fill != fill) {
-						t = false;
-						break;
-					}
-				}
-				if (t) {
-					return true;
-				}
+                // раз диагональ
+                t = true;
+                for (i = 0; i < G.len; i++) {
+                    if (sq.inc[i + i * G.len].fill != fill) {
+                        t = false;
+                        break;
+                    }
+                }
+                if (t) {
+                    return true;
+                }
 
-				// два диагональ
-				t = true;
-				for (i = 0; i < G.len; i++) {
-					if (sq.inc[G.len - i + i * G.len].fill != fill) {
-						t = false;
-						break;
-					}
-				}
-				if (t) {
-					return true;
-				}
-				return false;
-			}
+                // два диагональ
+                t = true;
+                for (i = 0; i < G.len; i++) {
+                    if (sq.inc[G.len - i + i * G.len].fill != fill) {
+                        t = false;
+                        break;
+                    }
+                }
+                if (t) {
+                    return true;
+                }
+                return false;
+            }
 
-			if (check(this)) {
-				this.press();
-			}
+            if (check(this)) {
+                this.press();
+            }
 
-			return this;
-		};
+            return this;
+        };
 
-		$(function() {
-			G.init();
-		});
-	</script>
+        $(function() {
+            G.init();
+        });
+    </script>
 </head>
 <body>
-	<div class="content">
-		<div class="gamewrap" id="gamewrap"></div>
-		<div class="desc">
-			<div class="desc__text" id="desc__text"></div>
-			<div class="desc__reset" id="desc__reset">Reset</div>
-		</div>
-	</div>
+    <div class="content">
+        <div class="gamewrap" id="gamewrap"></div>
+        <div class="desc">
+            <div class="desc__text" id="desc__text"></div>
+            <div class="desc__reset" id="desc__reset">Reset</div>
+        </div>
+    </div>
 </body>
 </html>
