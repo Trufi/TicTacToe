@@ -1,8 +1,8 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
 	<meta charset="UTF-8">
-	<title>Tic Tac Toe</title>
+	<title>Tic Tac Toe 2</title>
 	<style type="text/css">
 		body {margin: 0;}
 		.content {width: 500px; margin: 0 auto;}
@@ -111,7 +111,9 @@
 			this.deep = parent ? (parent.deep - 1) : 0;
 			this.html = $('<span />', {'class': 'deep-' + this.deep});
 			this.num = num || 0;
-			this.active = true;
+
+			// 3-и состояния: активна, неактивна, начальное = null
+			this.active = null;
 
 			if (this.deep > 0) {
 				this.includeSq();
@@ -158,10 +160,19 @@
 			return this;
 		};
 
-		// проверка родителей на active
-		Sq.prototype.checkParentsActive = function() {
+		Sq.prototype.setParentsActive = function(bool) {
 			if (this.parent.liteCheckWin) {
-				if (this.parent.active) {
+				this.parent.active = bool;
+				this.parent.setParentsActive(bool);
+			}
+
+			return this;
+		};
+
+		// проверка родителей на active
+		Sq.prototype.checkParentsActive = function(firstState) {
+			if (this.parent.liteCheckWin) {
+				if (this.parent.active || this.parent.active === null) {
 					return this.parent.checkParentsActive();
 				} else {
 					return false;
@@ -205,7 +216,7 @@
 			function check(sq) {
 				var i, t;
 
-				if (sq.fill != 0) {
+				if (sq.fill !== 0) {
 					return false;
 				}
 				// проверка по горизонтали
